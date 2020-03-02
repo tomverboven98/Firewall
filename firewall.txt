@@ -1,0 +1,17 @@
+iptables -p INPUT DROP
+iptables -p OUTPUT DROP
+iptables -p FORWARD DROP
+iptables -t filter -A INPUT -p icmp --icmp-type echo-request -m limit --limit 5/minute -j ACCEPT
+iptables -t filter -A INPUT -p icmp -j DROP
+iptables -t filter -A OUTPUT -p icmp --icmp-type echo-reply -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 21 -j ACCEPT
+iptables -A INPUT -p udp -m udp --dport 53 -j ACCEPT
+iptables -A OUTPUT -p tcp -m tcp --dport 53 -m state NEW -j ACCEPT
+iptables -A OUTPUT -p udp -m udp --dport 53 -m state NEW -j ACCEPT
+iptables -A INPUT -p tcp -m tcp --dport 80 -j ACCEPT
+iptables -A OUTPUT -p tcp -m tcp --dport 80 -m state NEW -j ACCEPT
+iptables -A INPUT -p icmp -j DROP
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A OUTPUT -o lo -j ACCEPT
+iptables -A OUTPUT -m state --state RELATED,ESTABLISHED ACCEPT
+
